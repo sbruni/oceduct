@@ -34,10 +34,6 @@
  *       'SoapMessaging',
  *       'smtp',
  *       'Stream',
- *       'UdbRead',
- *       'UdbWrite',
- * 		 'UdbSchema',
- *       'UdbFormatter'
  *    ),
  *    // functions
  *    'functions' => array(
@@ -173,14 +169,14 @@ $GLOBALS['iClasses'] = array(
 			'DatabaseException',
 			'Database'
 		)
-	)
+	),
 	'PostgreSql' => array(
 		'fn' => 'class.db_postgresql.php',
 		'rc' => array(
 			'DatabaseException',
 			'Database'
 		)
-	)
+	),
 	'SoapMessaging' => array(
 		'fn' => 'class.soap_messaging.php',
 		'rc' => array(
