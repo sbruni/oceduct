@@ -1,0 +1,120 @@
+Default Templates:
+These templates are required by the framework
+html/s_home.en.tpl (start with an empty file)
+php/d_footer.en.tpl
+php/d_header.en.tpl
+php/s_home.en.tpl
+
+You MUST copy them to your template/php directory
+You MAY change the language code on them and the extension but
+d_header and d_footer MUST stay
+
+
+Default Site:
+
+The default site is a default configuation that should run with no
+changes to the code (besides setting the config.php file).
+
+Apache configuation:
+
+The following changes MUST be implemented within the apache config, within the httpd.conf I added these lines:
+NOTE: I placed it after the DocumentRoot but it should work anywhere within the file
+NOTE: read the comments below to understand it a bit more
+NOTE: REMEMBER TO CHANGE THE PATHS
+
+(This SHOULD work on both *nix and windows systems)
+
+# Only choose one of these not both
+# If you have the framework running multiple times on your system
+# (say a development one)
+# then use the multiple version of it, remember to config it also
+# within the config.php
+
+# Single framework
+
+Alias /css "/projects/oceduct-default/css"
+Alias /graphics "/projects/oceduct-default/graphics"
+
+# Multiple frameworks
+
+Alias /css/oceduct-default "/projects/oceduct-default/css"
+Alias /graphics/oceduct-default "/projects/oceduct-default/graphics"
+
+<Directory "/projects/php/oceduct-default/">
+	# within THIS directory TAG
+	# PLACE YOUR AUTHENTICATION
+
+    Order Deny,allow
+    Allow from any
+    Satisfy any
+</Directory>
+
+# no/limited authentication should be within the following
+# directories, these can be allowed 
+
+<Directory "/projects/oceduct-default/css">
+    Order Deny,allow
+    Allow from any
+    Satisfy any
+</Directory>
+
+<Directory "/projects/php/oceduct-default/graphics">
+    Order Deny,allow
+    Allow from any
+    Satisfy any
+</Directory>
+
+<Directory "/projects/php/oceduct-default/misc/">
+    Order Deny,allow
+    Allow from any
+    Satisfy any
+</Directory>
+
+#NTLM
+# ntlm can be removed from here (and futher below) if you do not plan on using
+# this authentication type.
+# on *nix there are a few apache add ons for ntlm support
+# on windows I found SSPI works well
+# NTLM is only set on ONE directory NOT the entire project, this prevents
+# it from accessing the NTLM look up many many times (1 time per session vs
+# once per image and page load) I've seen it do 50+ on a single page
+# PHP SESSIONS are used to track the user (once authenticated)
+
+#<Directory "/projects/php/oceduct-default/ntlm">
+#    Options None
+#    Order allow,deny
+#    Allow from all
+#    AuthName "Login using your DOMAIN username and password"
+#    AuthType SSPI
+#    SSPIAuth On
+#    SSPIAuthoritative Off
+#    SSPIOfferBasic On
+#    require valid-user
+#    Satisfy all
+#</Directory>
+
+# *nix
+#<Directory "/projects/php/oceduct-default/ntlm">
+#        AllowOverride None
+#        Options MultiViews Indexes SymLinksIfOwnerMatch IncludesNoExec
+#        AuthType NTLM
+#        NTLMAuth on
+#        NTLMAuthoritative off
+#        NTLMDomain yourdomain
+#        NTLMServer yoursrv1
+#        Require valid-user
+#        Satisfy all
+#</Directory>
+
+# the below rewrite condition forces ALL incoming links (to this directory) to
+# be passed onto index.php which in turn processes all the rewriting etc...
+# this allows full rewrite control to the scripts instead of having to rely
+# on apache for it, while apache can do a good job if setup correctly,
+# this doesn't always happen, so I've instead written it into the framework
+# and allow that to control it
+
+RewriteEngine On
+RewriteCond %{REQUEST_URI} !(^/oceduct-default/ntlm/|^/oceduct-default/misc/|^/css/.+\.css|^/graphics/.+\.(gif|jpg)|^/favicon.ico$) [NC]
+RewriteRule /oceduct-default/.* /oceduct-default/index.php [NC,QSA]
+
+#end oceduct-default
